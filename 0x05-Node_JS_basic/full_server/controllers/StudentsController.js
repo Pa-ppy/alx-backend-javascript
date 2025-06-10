@@ -5,19 +5,17 @@ class StudentsController {
     const dbPath = process.argv[2];
     readDatabase(dbPath)
       .then((fields) => {
-        const response = ['This is the list of our students'];
-        const sortedFields = Object.keys(fields).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        let response = 'This is the list of our students\n';
+        const sortedFields = Object.keys(fields).sort();
 
-        sortedFields.forEach((field) => {
+        for (const field of sortedFields) {
           const list = fields[field];
-          response.push(
-            `Number of students in ${field}: ${list.length}. List: ${list.join(
-              ', ',
-            )}`,
-          );
-        });
+          response += `Number of students in ${field}: ${
+            list.length
+          }. List: ${list.join(', ')}\n`;
+        }
 
-        res.status(200).send(response.join('\n'));
+        res.status(200).send(response.trim());
       })
       .catch(() => res.status(500).send('Cannot load the database'));
   }
@@ -30,13 +28,10 @@ class StudentsController {
       return res.status(500).send('Major parameter must be CS or SWE');
     }
 
-    readDatabase(dbPath)
+    return readDatabase(dbPath)
       .then((fields) => {
         const list = fields[major];
-        if (!list) {
-          return res.status(200).send('List: ');
-        }
-        res.status(200).send(`List: ${list.join(', ')}`);
+        return res.status(200).send(`List: ${list ? list.join(', ') : ''}`);
       })
       .catch(() => res.status(500).send('Cannot load the database'));
   }
