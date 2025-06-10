@@ -1,58 +1,43 @@
-const express = require('express');
-const fs = require('fs');
+import express from 'express';
+import fs from 'fs';
 
-function countStudents(path) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(path, 'utf-8', (err, data) => {
-      if (err) {
-        reject(new Error('Cannot load the database'));
-        return;
-      }
-
-      const lines = data.split('\n').filter((line) => line.trim() !== '');
-      const students = lines.slice(1);
-      const fields = {};
-
-      for (const line of students) {
-        const [firstname, , , field] = line.split(',');
-        if (!fields[field]) {
-          fields[field] = [];
-        }
-        fields[field].push(firstname);
-      }
-
-      const output = [];
-      output.push(`Number of students: ${students.length}`);
-      for (const field in fields) {
-        output.push(
-          `Number of students in ${field}: ${
-            fields[field].length
-          }. List: ${fields[field].join(', ')}`,
-        );
-      }
-      resolve(output.join('\n'));
-    });
-  });
-}
-
-const database = process.argv[2];
 const app = express();
 
 app.get('/', (req, res) => {
   res.send('Hello ALX!');
 });
 
-app.get('/students', async (req, res) => {
-  try {
-    const data = await countStudents(database);
-    res.type('text/plain');
-    res.send(`This is the list of our students\n${data}`);
-  } catch (err) {
-    res.type('text/plain');
-    res.send('This is the list of our students\nCannot load the database');
-  }
+app.get('/students', (req, res) => {
+  const dbPath = process.argv[2];
+  fs.readFile(dbPath, 'utf8', (err, data) => {
+    if (err) {
+      res.status(500).send('Cannot load the database');
+      return;
+    }
+
+    const lines = data.trim().split('\n').slice(1).filter(Boolean);
+    const result = {};
+
+    for (const line of lines) {
+      const [first, , , field] = line.split(',');
+      if (!result[field]) result[field] = [];
+      result[field].push(first);
+    }
+
+    let response = 'This is the list of our students\n';
+    response += `Number of students: ${lines.length}\n`;
+
+    for (const field in result) {
+      if (Object.prototype.hasOwnProperty.call(result, field)) {
+        response += `Number of students in ${field}: ${
+          result[field].length
+        }. List: ${result[field].join(', ')}\n`;
+      }
+    }
+
+    res.send(response.trim());
+  });
 });
 
 app.listen(1245);
-
-module.exports = app;
+export default app;
