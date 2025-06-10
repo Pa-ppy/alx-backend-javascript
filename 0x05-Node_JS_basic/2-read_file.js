@@ -2,27 +2,33 @@ const fs = require('fs');
 
 function countStudents(path) {
   try {
-    const data = fs.readFileSync(path, 'utf-8');
-    const lines = data.split('\n').filter((line) => line.trim() !== '');
-    const students = lines.slice(1); // Skip header
+    const data = fs.readFileSync(path, 'utf8').split('\n');
+    const students = data.filter((line) => line.trim() !== '');
+    students.shift();
 
-    const fields = {};
+    const result = {};
     for (const line of students) {
-      const [firstname, , , field] = line.split(',');
-      if (!fields[field]) {
-        fields[field] = [];
-      }
-      fields[field].push(firstname);
+      const fields = line.split(',');
+      const field = fields[3];
+      const name = fields[0];
+      if (!result[field]) result[field] = [];
+      result[field].push(name);
     }
 
-    console.log(`Number of students: ${students.length}`);
-    for (const field in fields) {
-      console.log(
-        `Number of students in ${field}: ${
-          fields[field].length
-        }. List: ${fields[field].join(', ')}`,
-      );
+    let total = 0;
+    for (const field in result) {
+      if (Object.prototype.hasOwnProperty.call(result, field)) {
+        const count = result[field].length;
+        console.log(
+          `Number of students in ${field}: ${count}. List: ${result[field].join(
+            ', ',
+          )}`,
+        );
+        total += count;
+      }
     }
+
+    console.log(`Number of students: ${total}`);
   } catch (err) {
     throw new Error('Cannot load the database');
   }
