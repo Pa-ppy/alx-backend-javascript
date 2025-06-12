@@ -1,0 +1,16 @@
+{
+  "name": "task_0",
+  "version": "1.0.0",
+  "description": "Math utility and payment calculation tests",
+  "main": "0-calcul.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "sinon": "^17.0.1"
+  }
+}
