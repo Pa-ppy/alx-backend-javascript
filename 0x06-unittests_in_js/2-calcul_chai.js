@@ -1,15 +1,15 @@
-function calculateNumber (type, a, b) {
-  const x = Math.round(a);
-  const y = Math.round(b);
+function calculateNumber(type, a, b) {
+  const aRounded = Math.round(a);
+  const bRounded = Math.round(b);
 
   switch (type) {
     case 'SUM':
-      return x + y;
+      return aRounded + bRounded;
     case 'SUBTRACT':
-      return x - y;
+      return aRounded - bRounded;
     case 'DIVIDE':
-      if (y === 0) return 'Error';
-      return x / y;
+      if (bRounded === 0) return 'Error';
+      return aRounded / bRounded;
     default:
       throw new Error('Invalid type');
   }
